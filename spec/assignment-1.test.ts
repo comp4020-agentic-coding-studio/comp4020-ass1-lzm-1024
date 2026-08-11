@@ -3,28 +3,47 @@ import { resolve } from "node:path";
 import { JSDOM } from "jsdom";
 import { describe, expect, it } from "vitest";
 
-// Turns the assignment 1 spec line "the visitor does something that changes
-// what they see" into a test. Placeholder until the core interaction is
-// picked — replace the selectors and assertion below with the real
-// trigger/target once index.html and main.ts implement it.
-const TODO =
-  "Pick the core interaction, mark its trigger and its changing target with data-testid, then replace this test with a real assertion — see spec/README.md.";
-
+// The core interaction: scrolling the timeline changes the readout. This
+// asserts the built page has both hooks and a genuinely large, categorized
+// dataset — the assignment's scope commitment was 50+ milestones across
+// three lanes, not a smaller curated set, so a regression back down to a
+// handful of items should fail here.
 describe("assignment 1 spec", () => {
-  it("marks a core interaction that changes what the visitor sees", () => {
-    const distPath = resolve("dist/index.html");
-    expect(existsSync(distPath), `${distPath} not found. ${TODO}`).toBe(true);
+  const distPath = resolve("dist/index.html");
+  const doc = existsSync(distPath)
+    ? new JSDOM(readFileSync(distPath, "utf8")).window.document
+    : null;
 
-    const doc = new JSDOM(readFileSync(distPath, "utf8")).window.document;
+  it("builds dist/index.html", () => {
+    expect(existsSync(distPath), `${distPath} not found — run pnpm build first.`).toBe(true);
+  });
 
-    const trigger = doc.querySelector(
-      '[data-testid="core-interaction-trigger"]',
+  it("marks the core interaction's trigger and target", () => {
+    expect(doc?.querySelector('[data-testid="core-interaction-trigger"]')).toBeTruthy();
+    expect(doc?.querySelector('[data-testid="core-interaction-target"]')).toBeTruthy();
+  });
+
+  it("has at least 50 dated milestones", () => {
+    const milestones = doc?.querySelectorAll("[data-year]") ?? [];
+    expect(milestones.length).toBeGreaterThanOrEqual(50);
+  });
+
+  it("spreads milestones across all three categories", () => {
+    const categories = ["civil", "fighter", "bomber"] as const;
+    for (const category of categories) {
+      const count = doc?.querySelectorAll(`[data-category="${category}"]`).length ?? 0;
+      expect(count, `expected milestones in the "${category}" lane`).toBeGreaterThan(5);
+    }
+  });
+
+  it("gives every milestone a year that is a plausible 20th/21st century date", () => {
+    const years = Array.from(doc?.querySelectorAll("[data-year]") ?? []).map((el) =>
+      Number(el.getAttribute("data-year")),
     );
-    const target = doc.querySelector(
-      '[data-testid="core-interaction-target"]',
-    );
-
-    expect(trigger, `No interaction trigger found. ${TODO}`).toBeTruthy();
-    expect(target, `No interaction target found. ${TODO}`).toBeTruthy();
+    for (const year of years) {
+      expect(Number.isInteger(year)).toBe(true);
+      expect(year).toBeGreaterThanOrEqual(1903);
+      expect(year).toBeLessThanOrEqual(2026);
+    }
   });
 });

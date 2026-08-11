@@ -1,16 +1,206 @@
-body {
-  margin: 0;
-  padding: 2rem;
-  font-family: system-ui, sans-serif;
-  line-height: 1.6;
-  color: #1a1a1a;
+/* Design tokens and reset */
+:root {
+  --color-bg: #0f1115;
+  --color-surface: #181b22;
+  --color-card: #21252f;
+  --color-text: #e8eaf0;
+  --color-muted: #9aa1b1;
+  --color-border: #2e333f;
+  --color-civil: #4fb0ff;
+  --color-fighter: #ff9f4f;
+  --color-bomber: #ff5c7a;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+  --radius: 0.5rem;
+  --font-sans: system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", consolas, monospace;
+  --duration-fast: 150ms;
+  --easing: ease-out;
 }
 
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: var(--space-4);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* Global typography and links */
 main {
-  max-width: 40rem;
+  max-width: 60rem;
   margin: 0 auto;
 }
 
+h1 {
+  font-size: 1.75rem;
+  margin-bottom: var(--space-2);
+}
+
 a {
-  color: #0b5fff;
+  color: var(--color-civil);
+}
+
+/* Shared layout */
+.site-header nav a {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* Reusable components */
+.readout {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  min-height: 3.5rem;
+}
+
+.static-demo-notice {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+/* Timeline section */
+.timeline {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  scroll-snap-type: x proximity;
+}
+
+.timeline:focus-visible {
+  outline: 2px solid var(--color-civil);
+  outline-offset: -2px;
+}
+
+.timeline-track {
+  position: relative;
+  width: calc((var(--end-year) - var(--start-year) + 4) * var(--px-per-year));
+  padding: var(--space-3) var(--space-4);
+}
+
+.timeline-ruler {
+  position: relative;
+  height: 2rem;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-3);
+}
+
+.tick {
+  position: absolute;
+  left: calc((var(--year) - var(--start-year)) * var(--px-per-year));
+  bottom: 0;
+  padding-bottom: var(--space-1);
+  border-left: 1px solid var(--color-border);
+  padding-left: var(--space-1);
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+
+.lane-row {
+  position: relative;
+}
+
+.lane-label {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  display: inline-block;
+  margin: 0 0 var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-bg);
+  border-radius: var(--radius);
+  font-size: 1rem;
+}
+
+.lane {
+  position: relative;
+  list-style: none;
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  height: 9rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.milestone {
+  position: absolute;
+  top: var(--space-3);
+  left: calc((var(--year) - var(--start-year)) * var(--px-per-year));
+  width: 11.5rem;
+  scroll-snap-align: start;
+  background: var(--color-card);
+  border-left: 3px solid var(--color-muted);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+}
+
+.milestone[data-category="civil"] {
+  border-left-color: var(--color-civil);
+}
+
+.milestone[data-category="fighter"] {
+  border-left-color: var(--color-fighter);
+}
+
+.milestone[data-category="bomber"] {
+  border-left-color: var(--color-bomber);
+}
+
+.milestone img {
+  display: block;
+  width: 100%;
+  height: 6rem;
+  object-fit: cover;
+  border-radius: var(--radius);
+  margin-bottom: var(--space-2);
+}
+
+.milestone-title {
+  margin: 0 0 var(--space-1);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.milestone-year {
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  margin-right: var(--space-1);
+}
+
+.milestone-fact {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+/* Responsive rules */
+@media (width <= 480px) {
+  body {
+    padding: var(--space-3);
+  }
+
+  .milestone {
+    width: 9.5rem;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .timeline {
+    scroll-behavior: auto;
+  }
 }

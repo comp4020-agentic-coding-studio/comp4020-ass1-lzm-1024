@@ -161,3 +161,57 @@ catching you out, a fact about the stack the agent keeps getting wrong --- write
 it down here. Growing this file is the work of harness engineering, and the gap
 between this boilerplate and your own version is part of what your prototype
 says about the developer you're becoming.
+
+### Project-specific engineering rules
+
+Carried forward from crit 2, minus the rules specific to that week's brief
+(the ANU Sport redesign). These are general conventions that held up across a
+build and are worth holding the agent to again.
+
+- **Keep the technical contract intact.** The shipped site must remain plain
+  HTML and CSS with no frameworks, component runtimes, or third-party UI/JS
+  libraries. Do not introduce a new dependency when the same result can be
+  expressed clearly with the existing stack.
+- **Use JavaScript as progressive enhancement.** Vanilla TypeScript or
+  JavaScript may power the core interaction, filtering, saved preferences,
+  accessibility controls, and motion. Core content must remain readable
+  without it, and all motion must be neutralised under
+  `prefers-reduced-motion: reduce`.
+- **Separate structure from presentation.** HTML owns content, document
+  structure, links, labels, and accessibility semantics. `styles.css` owns all
+  visual presentation. Do not use inline `style` attributes or presentational
+  markup to work around the stylesheet.
+- **Use small reusable CSS components.** Reuse existing component classes for
+  repeated ideas. Prefer one clear class with a narrow responsibility over
+  long selectors that depend on a particular DOM nesting structure. Add a new
+  component class only when a pattern is repeated or has a distinct meaning.
+- **Use design tokens for repeated visual decisions.** Shared colours,
+  spacing, type scale, radius, elevation, and motion durations/easings belong
+  in CSS custom properties near the top of `styles.css`. Do not scatter
+  unexplained near-duplicate values through the file.
+- **Keep CSS organised from general to specific.** Maintain this order:
+  design tokens and reset, global typography and links, shared layout,
+  reusable components, page-specific sections, responsive rules, and
+  reduced-motion rules. Put a short heading comment above each major section;
+  do not split the stylesheet merely to make the file tree look more
+  sophisticated.
+- **Make content and markup readable.** Use semantic elements, descriptive
+  class names, correctly associated form labels, useful image `alt` text, and
+  concise headings. Keep indentation consistent. Comments should explain a
+  non-obvious decision or constraint, not repeat what the code already says.
+- **Represent static interactions honestly.** There is no backend. Keep
+  static-demo notices visible where relevant and use `type="button"` where
+  submission would otherwise imply a working server.
+- **Change the smallest coherent unit.** Before editing, inspect the relevant
+  HTML, its shared styles, and the tests that express its contract. Avoid
+  broad rewrites for a local change. When a shared pattern changes, verify
+  every page that uses it at desktop and mobile sizes.
+- **Prefer evidence over assumptions.** After a meaningful change, run
+  `pnpm check`, then inspect the rendered result at 1920x1080 and 390x844.
+  Check focus visibility, text contrast, overflow, navigation, image loading,
+  and form labels. A green test suite does not replace visual inspection.
+- **Do not over-engineer.** Do not create utility layers, naming systems,
+  templates, generators, or abstractions for a single use. Duplication is
+  worth removing when it represents a stable shared concept; two superficially
+  similar blocks may remain separate when combining them would make either one
+  harder to understand or change.

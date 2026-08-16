@@ -60,26 +60,28 @@ safe is therefore part of the model, not an optional disclaimer.
 
 ### 3. Turn calculated distance into a decision
 
-The first working page calculated stopping distance but still allowed visitors
-to remain passive. I considered road-safety video, but fixed footage could not
-respond to an individual visitor's timing or choice, and realism alone would
-not demonstrate causality. I instead built challenges in which visitors react
-to a random hazard, choose a speed, predict a following gap and receive
-distance or impact-speed feedback.
+The first working page calculated stopping distance but left visitors passive.
+I rejected fixed road-safety video because it could not respond to individual
+timing or choices. Instead, the reaction, obstacle, gap and hazard challenges
+ask for a judgement, then report distance, remaining space or impact speed
+rather than a simple pass/fail result.
 
-I rejected simple success and failure messages because they hide how close a
-decision was. The activities report distance travelled, remaining space,
-residual collision speed or the cost of another half-second. Review the
-implementation in
+The calculation and DOM tests landed in
 [`090561d`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-lzm-1024/commit/090561d0dcbb2c2350e7e0dadbe789f29dedcd21),
 especially [`hazard-perception.test.ts`](hazard-perception.test.ts),
 [`braking-challenge.test.ts`](braking-challenge.test.ts),
 [`road-games.test.ts`](road-games.test.ts) and
-[`experiments.test.ts`](experiments.test.ts). They verify reaction distance,
-collision outcomes, predictions and interaction state. Manual checks at desktop
-and mobile sizes also covered keyboard input, random scenario completion and
-overflow, while the interface acknowledges device latency rather than
-presenting the browser result as a clinical measurement.
+[`experiments.test.ts`](experiments.test.ts). They verify calculations and
+state, but JSDOM could not substantiate my browser claim. I turned that gap into
+a harness rule: `pnpm check` now launches real Chrome, resizes a running test
+from 1920×1080 to 390×844, completes random scenarios with Space, and fails on
+horizontal overflow. The correction, script and [desktop](browser-evidence/desktop-core-interaction.png),
+[reaction](browser-evidence/mobile-keyboard-reaction.png) and
+[hazard](browser-evidence/mobile-random-hazard.png) evidence are in
+[`0b88d7e`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-lzm-1024/commit/0b88d7e80fd955e0a15885c0a69bd19b9c2a951f).
+The resulting state also survives resizing back to desktop, while the visible
+latency note prevents the browser timing from being presented as clinical
+evidence.
 
 ## Before you ship
 

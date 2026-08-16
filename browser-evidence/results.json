@@ -1,0 +1,20 @@
+{
+  "viewports": [
+    "1920x1080",
+    "390x844"
+  ],
+  "checks": [
+    "core slider changes both calculation and road marker",
+    "range control responds to keyboard input",
+    "reaction run survives a desktop-to-mobile resize",
+    "Space completes the random reaction test",
+    "Space completes a random hazard scenario",
+    "no horizontal overflow at either marking viewport",
+    "completed interaction state survives resize back to desktop"
+  ],
+  "screenshots": [
+    "desktop-core-interaction.png",
+    "mobile-keyboard-reaction.png",
+    "mobile-random-hazard.png"
+  ]
+}

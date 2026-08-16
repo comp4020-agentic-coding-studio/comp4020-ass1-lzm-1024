@@ -247,7 +247,10 @@ are project constraints, not presentation preferences.
 - **Verify interaction states, not only initial screenshots.** At 1920x1080 and
   390x844, operate the core control, reaction test, collision outcome and
   hazard result; resize during an interaction; tab through controls; confirm
-  live feedback remains understandable without colour alone.
+  live feedback remains understandable without colour alone. `pnpm check`
+  must run `scripts/browser-evidence.mjs` in real Chrome and preserve its
+  desktop, mobile, keyboard, random-scenario and overflow evidence under
+  `browser-evidence/`; JSDOM tests alone do not satisfy this rule.
 - **Make motion optional and latency explicit.** Keyboard input must work for
   time-critical activities, device latency must be disclosed, and meaningful
   content must remain usable under `prefers-reduced-motion: reduce`.

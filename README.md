@@ -1,64 +1,84 @@
-# COMP4020 static prototype template
+# Stopping Distance
 
-A starter template for static-site prototypes in **COMP4020 / COMP8020 Agentic
-Coding Studio**. The course provisions a repo from this template for each
-deliverable --- you don't create it yourself. The `start` course skill clones it
-for you; from there, build your prototype and deploy it to GitHub Pages.
+An interactive explainer of how speed, reaction time, tyre tread and road grip
+change the amount of road a driver needs before a vehicle can stop.
 
-## CI and Pages only turn on when you ship
+The central claim is simple: danger begins before the brakes are applied.
+Reaction distance grows with speed, while idealised braking distance grows
+approximately with speed squared. The page makes that relationship visible
+rather than asking visitors to accept the formula.
 
-Your repo starts private, and both CI jobs (`check` and `deploy`) are gated on
-it being public. While private, a push to `main` runs nothing in CI ---
-`pnpm check` (below) is your feedback loop until then. When you're ready, the
-course's `/ship` skill flips the repo public, turns on GitHub Pages, and
-dispatches the deploy for you; there's nothing to configure in the Pages
-settings yourself. From that point, every push to `main` builds and deploys, and
-the deploy step prints your live URL and checks it returns 200.
+## Core interaction
 
-## What gets marked
+On the main page, visitors change vehicle speed, tread depth and road condition.
+The same calculation updates:
 
-The deployed site is the deliverable, assessed live in Chrome at two fixed
-viewports --- see the course website's
-[assessment page](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/assessment/#marking-environment)
-for the details.
+- reaction distance;
+- braking distance;
+- total stopping distance; and
+- the vehicle's stopping point on the road visualisation.
 
-## Quick start
+The experiment page reuses the model for a personal reaction test, obstacle
+challenge, following-gap comparison, 10 km/h speed duel, prediction quiz and
+randomised hazard-perception simulation. Both pages support English, Simplified
+Chinese, Traditional Chinese, Japanese and Korean.
 
-```sh
-mise install       # supported path: install the template's Node and pnpm
-pnpm install
-pnpm dev        # local dev server
-pnpm check      # most of what CI runs (links, secrets, evidence and deploy are CI-only)
-pnpm build      # produce dist/ (what gets deployed)
-pnpm dlx linkinator ./dist --silent   # reproduce CI's links check before you push
+## Model and evidence
+
+The educational model separates reaction and braking:
+
+```text
+reaction distance = speed x reaction time
+braking distance = speed squared / (2 x grip x gravity)
+total distance = reaction distance + braking distance
 ```
 
-`mise` is the course's recommended runtime manager. If you use another manager
-or the official installers, that is fine: provide the Node and pnpm versions in
-`mise.toml`, then run the same commands. Tutor support reproduces runtime
-problems with mise.
+Baseline car values are calibrated to published Queensland stopping-distance
+guidance. Wet-tread adjustments use Continental test points, while the smaller
+dry-tread adjustment is bounded to a controlled Tire Rack result. The car–truck
+comparison uses separate Northern Territory Government figures and does not
+claim to isolate tread, weather, load or vehicle configuration.
 
-## What's here
+This is an educational model, not a source of real-world driving distances.
+Actual results depend on the vehicle, driver, tyres, brakes, gradient, load,
+road and weather.
 
-- `index.html`, `styles.css`, `main.ts` --- a minimal starting site. Replace it.
-- `mise.toml` --- the tested Node and pnpm versions for this template.
-- `spec/` --- what the checks are for (`README.md`), the shipped invariants
-  (`invariants.test.ts`), and a replaceable starter test (`starter.test.ts`);
-  the spec tests you write live alongside them.
-- `CLAUDE.md` --- orients your coding agent: what the checks mean and how to
-  work here. Yours to grow.
-- `PROCESS.md` --- a template for your process overview, showing the
-  cited-moment format. Replace it with your own; `pnpm check:evidence` verifies
-  your citations resolve.
-- `.github/workflows/checks.yml` --- the CI sensors that run on every push once
-  your repo is public, and the GitHub Pages deploy.
-- `.githooks/pre-commit` --- blocks any commit that contains something shaped
-  like an API key, so your COMP4020 key can't end up in a public repo. Installed
-  automatically by `pnpm install`.
+## Run locally
 
-This template is SSG-agnostic: it's plain HTML/CSS/TypeScript on Vite, so you
-can add Astro, Eleventy, or any static generator later without changing how it
-deploys. TypeScript is the course default over plain JavaScript: the types are
-extra backpressure, and your agent feels it before you do.
+Requirements: Node.js and pnpm versions matching `mise.toml`.
 
-See the course site for how the checks map to each week of the course.
+```sh
+pnpm install
+pnpm dev
+```
+
+Open the local URL printed by Vite. The main page is `index.html`; the extended
+interaction page is `experiments.html`.
+
+## Verify
+
+```sh
+pnpm test
+pnpm check
+pnpm check:evidence
+pnpm build
+pnpm dlx linkinator ./dist --silent
+```
+
+`pnpm check` runs type checking, the production build, TypeScript and CSS
+linting, and the Vitest suite. The marked layouts are 1920x1080 and 390x844,
+so both must also be inspected in Chrome, including keyboard navigation and a
+resize during interaction.
+
+## Project structure
+
+- `stopping-distance.ts` — passenger-car stopping model;
+- `truck-stopping.ts` — separate published heavy-vehicle comparison;
+- `braking-challenge.ts` and `road-games.ts` — challenge calculations;
+- `hazard-perception.ts` — response-time analysis;
+- `main.ts` and `experiments.ts` — page interaction state;
+- `i18n.ts` — five-language localisation; and
+- `spec/` and `*.test.ts` — assignment, model and interaction checks.
+
+The production output is written to `dist/` and deployed as a static GitHub
+Pages site.

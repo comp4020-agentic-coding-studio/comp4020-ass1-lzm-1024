@@ -215,3 +215,39 @@ build and are worth holding the agent to again.
   worth removing when it represents a stable shared concept; two superficially
   similar blocks may remain separate when combining them would make either one
   harder to understand or change.
+
+### Assignment 1 corrections now enforced
+
+These rules were added after failures in the stopping-distance explainer. They
+are project constraints, not presentation preferences.
+
+- **One source of truth for every control.** A slider value, displayed value,
+  calculated output and visual position must derive from the same state. A
+  control that moves without changing the model is a failing interaction.
+- **Keep calculations pure and testable.** Stopping, collision, following-gap,
+  truck and hazard-response calculations belong in typed pure functions. UI
+  modules may format or animate their results but must not duplicate formulas.
+  Every boundary, interpolation rule and new outcome requires a unit test.
+- **Bound claims to their evidence.** Do not turn one tyre, road or vehicle test
+  into a universal safety claim. Show the source, preserve the measured
+  direction and size of the effect, and state what the data cannot establish.
+- **Never merge incompatible datasets.** The passenger-car model and published
+  car–truck comparison remain separate unless a source controls for tread,
+  surface, load and vehicle configuration. Missing variables must stay visible
+  in the copy.
+- **Keep one explanatory spine.** New activities must reuse the relationship
+  between speed, reaction, grip and stopping distance. Reject features that are
+  decorative, disconnected from that model, or add breadth without teaching
+  the central idea.
+- **Treat localisation as a completeness requirement.** Any new visible text,
+  dynamic feedback, accessible name or disclaimer must have all five language
+  variants. After copy changes, run localisation tests and audit both pages for
+  residual English in non-English mode; proper names and units are the only
+  intentional exceptions.
+- **Verify interaction states, not only initial screenshots.** At 1920x1080 and
+  390x844, operate the core control, reaction test, collision outcome and
+  hazard result; resize during an interaction; tab through controls; confirm
+  live feedback remains understandable without colour alone.
+- **Make motion optional and latency explicit.** Keyboard input must work for
+  time-critical activities, device latency must be disclosed, and meaningful
+  content must remain usable under `prefers-reduced-motion: reduce`.

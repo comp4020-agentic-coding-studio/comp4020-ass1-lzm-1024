@@ -1,85 +1,77 @@
 # Process overview
 
-<!-- TEMPLATE: this file is a shape to fill in, not a form. Replace everything
-     in it with your own overview, and delete this comment — `pnpm
-     check:evidence` will remind you if it's still here. -->
-
-A reading-guide to how the work came together --- a map to your process, not an
-essay about it. Markers read this file and follow its citations; they don't
-trawl the repo for evidence you didn't point at, so if a moment mattered, cite
-it.
-
-This file is the shape; the course site's
-[assessment page](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/assessment/#what-you-submit)
-is the requirement, and its
-[word counts](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/assessment/#word-counts)
-cover every deliverable.
+Four decisions turned an unreliable visual control into a stopping-distance
+explainer where every action changes a meaningful outcome. Each records a
+rejected shortcut and the evidence
+used to accept its replacement.
 
 ## What I built
 
-One paragraph: the thing, and the idea behind it.
+**Stopping Distance** explains how much road a
+driver needs before a vehicle can stop. Speed, tyre tread and road condition
+change reaction, braking and total distance together. Reaction, obstacle,
+following-gap and hazard tasks reuse the model.
+The central idea is that danger begins before braking: reaction distance grows
+with speed, while braking distance grows with speed squared.
 
 ## The moments that mattered
 
-Three or four for an assignment; fewer is fine for a weekly prototype. Keep the
-list short so each moment has room to do all four jobs:
+### 1. Make every control change the model, not only its appearance
 
-1. **what happened** --- the problem, or the thing the agent got wrong
-2. **what you did instead of the obvious thing** --- the call you made, and why
-   it beat the obvious one
-3. **how you knew it was right** --- the check you ran, the viewport you looked
-   at, what you read before accepting the diff
-4. **the citation** --- a commit or commit range, a `CLAUDE.md` change, a check
-   that went from red to green, a prompt paired with the commit it produced
+An earlier Moon prototype had a slider whose thumb moved while focal length
+stayed at 28 mm and the Moon remained unchanged. Patching the displayed number
+could leave the interface and explanation out of sync again. I instead made
+all stopping-distance outputs derive from one pure calculation. The
+core-interaction requirement began red and reached the model in
+[`59163ba...d68d701`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-lzm-1024/compare/59163ba...d68d701d575a7760525fb70b5f06ae9a7c3b35e9).
+Boundary, interpolation and speed-change tests in
+[`stopping-distance.test.ts`](stopping-distance.test.ts), plus DOM tests in
+[`main.test.ts`](main.test.ts), verify that a control changes the visible model
+rather than only its position.
 
-Jobs 2 and 3 are the ones the repo can't tell a reader on its own, so they're
-where the marks are. The strongest moments are the ones where a correction
-landed in the **harness** rather than in another prompt --- a rule added to
-`CLAUDE.md`, a check wired up, an attempt thrown away: re-prompting until it
-passes is the routine case, and changing what the agent works against is the
-skilled one.
+### 2. Show evidence limits instead of forcing a simple tyre story
 
-Cite each moment as a link whose text is the commit hash or range and whose
-target is this repo's commit or compare URL, so a reader clicks straight to the
-evidence:
+The first model made tread change braking in one direction, a story unsupported
+on dry roads. I rejected a universal coefficient: Queensland data calibrates
+the baseline, Continental points adjust wet braking, and a Tire Rack result
+supplies the smaller dry adjustment. The page states that this does not make
+damaged tyres safe. I kept the Northern Territory car–truck comparison separate
+because its figures do not isolate tread, weather, load or configuration.
+Source boundaries are checked in [`stopping-distance.test.ts`](stopping-distance.test.ts),
+[`truck-stopping.test.ts`](truck-stopping.test.ts) and
+[`spec/assignment-1.test.ts`](spec/assignment-1.test.ts). The model
+landed in [`d68d701`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-lzm-1024/commit/d68d701d575a7760525fb70b5f06ae9a7c3b35e9).
 
-- one commit: [`a1b2c3d`](https://github.com/YOUR-ORG/YOUR-REPO/commit/a1b2c3d)
-- a range:
-  [`a1b2c3d...e4f5a6b`](https://github.com/YOUR-ORG/YOUR-REPO/compare/a1b2c3d...e4f5a6b)
+### 3. Replace stock video with a testable hazard simulation
 
-To pair a prompt with the commit it produced, quote the prompt (curated, not a
-full transcript) next to the citation:
+Video looked immersive but introduced copyright, download and fixed-timing
+problems. I built an SVG dashcam scene that randomly reveals a pedestrian,
+cyclist or stopped vehicle. An early click is a false alarm; a later click
+becomes distance travelled plus the cost of another half-second. The model is
+tested in [`hazard-perception.test.ts`](hazard-perception.test.ts). At
+1920x1080 and 390x844, random scenarios reached a result, keyboard input worked
+and neither viewport overflowed. When a screenshot exposed untranslated copy,
+I audited both pages and added regression coverage in
+[`i18n.test.ts`](i18n.test.ts). It landed in
+[`090561d`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-lzm-1024/commit/090561d0dcbb2c2350e7e0dadbe789f29dedcd21).
 
-> the prompt, verbatim
+### 4. Turn a calculator into decisions, not disconnected games
 
-Screenshots are welcome where one carries the verification better than a
-sentence does. Commit the file to this repo and link it with a **relative**
-path, which is what makes it render on GitHub: `![alt text](docs/before.png)`.
-Images don't count towards the word count and don't replace the citation.
-
-### A worked moment, for shape
-
-Delete this section along with the rest of the boilerplate --- it's here to show
-the four jobs in one paragraph, not to be imitated in content.
-
-> The date formatter kept coming back with `toLocaleDateString()` and no locale
-> argument, so the same build rendered differently on my machine and in CI. I'd
-> already re-prompted it twice, which fixed the line but not the habit, so the
-> third time I put the rule in `CLAUDE.md` instead
-> ([`3f9ac21`](https://github.com/YOUR-ORG/YOUR-REPO/commit/3f9ac21)) and added
-> a spec test that fails on a bare `toLocaleDateString`. That's what told me it
-> had actually taken: the test went red against the old code and green against
-> the new, and the next two features it wrote passed it without prompting
-> ([`3f9ac21...b7e0d14`](https://github.com/YOUR-ORG/YOUR-REPO/compare/3f9ac21...b7e0d14)).
+A readout can show a formula without making the visitor use it. I rejected
+decorative mini-games; each experiment instead asks whether road runs out
+before the vehicle stops. Measured reaction time transfers into the obstacle
+model, which reports remaining space or impact speed. Following-gap and 10
+km/h comparisons hide the answer until the visitor chooses. Tests in
+[`braking-challenge.test.ts`](braking-challenge.test.ts),
+[`road-games.test.ts`](road-games.test.ts) and
+[`experiments.test.ts`](experiments.test.ts) verify collision speed, safer
+speed, prediction outcomes and interaction state
+([`d68d701...090561d`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-lzm-1024/compare/d68d701d575a7760525fb70b5f06ae9a7c3b35e9...090561d0dcbb2c2350e7e0dadbe789f29dedcd21)).
 
 ## Before you ship
 
-`pnpm check:evidence` verifies your citations resolve to real commits, that the
-current reflection entry is in `reflections/`, and that your `CLAUDE.md` is
-there --- before a marker ever opens the file. It checks that your map is
-traceable, not that it is good: the marker judges whether your small,
-deliberately chosen set of moments shows real judgement and reflection. A green
-check is not a substitute for that curation.
-
-Images are deliberately not checked, because whether one renders is visible the
-moment you look. Open this file on GitHub and look at it before you ship.
+`pnpm test` passes 77 tests across 11 files; `pnpm check` also passes type
+checking, production build and linting. I manually checked both
+viewports, keyboard input and horizontal overflow. `pnpm check:evidence`
+locally resolves every cited commit; the GitHub links become public after the
+repository is pushed and shipped.

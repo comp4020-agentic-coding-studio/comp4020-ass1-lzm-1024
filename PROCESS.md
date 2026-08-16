@@ -1,77 +1,88 @@
 # Process overview
 
-Four decisions turned an unreliable visual control into a stopping-distance
-explainer where every action changes a meaningful outcome. Each records a
-rejected shortcut and the evidence
-used to accept its replacement.
+This is a reading guide to three decisions that shaped **Stopping Distance**.
+Each moment identifies the problem, the alternative I rejected, the evidence
+used to accept the replacement, and the exact history range or commit where a
+reviewer can inspect the supporting work in context.
 
 ## What I built
 
-**Stopping Distance** explains how much road a
-driver needs before a vehicle can stop. Speed, tyre tread and road condition
-change reaction, braking and total distance together. Reaction, obstacle,
-following-gap and hazard tasks reuse the model.
-The central idea is that danger begins before braking: reaction distance grows
-with speed, while braking distance grows with speed squared.
+**Stopping Distance** is an interactive road-safety explainer. Visitors change
+speed, road condition and tyre tread, then see reaction, braking and total
+distance update on a shared road visual. A second page applies the same model
+through reaction, obstacle, following-gap, speed-comparison and
+hazard-perception activities. The central lesson is that reaction distance
+grows with speed, while braking distance grows with speed squared.
 
 ## The moments that mattered
 
-### 1. Make every control change the model, not only its appearance
+### 1. Make the control change the explanation
 
-An earlier Moon prototype had a slider whose thumb moved while focal length
-stayed at 28 mm and the Moon remained unchanged. Patching the displayed number
-could leave the interface and explanation out of sync again. I instead made
-all stopping-distance outputs derive from one pure calculation. The
-core-interaction requirement began red and reached the model in
-[`59163ba...d68d701`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-lzm-1024/compare/59163ba...d68d701d575a7760525fb70b5f06ae9a7c3b35e9).
-Boundary, interpolation and speed-change tests in
-[`stopping-distance.test.ts`](stopping-distance.test.ts), plus DOM tests in
-[`main.test.ts`](main.test.ts), verify that a control changes the visible model
-rather than only its position.
+An earlier Moon prototype exposed the failure I wanted to avoid: the slider
+thumb moved, but the focal length remained 28 mm and the Moon did not change.
+The captured states are available as [minimum-position evidence](process-images/moon-slider-left.png),
+[middle-position evidence](process-images/moon-slider-middle.png) and
+[maximum-position evidence](process-images/moon-slider-right.png). They made it
+clear that visible input feedback was not proof of a working explanation.
 
-### 2. Show evidence limits instead of forcing a simple tyre story
+I rejected separate handlers for each label and graphic because they could
+silently disagree. I made one pure stopping calculation the source of every
+distance, road marker and comparison, with presets passing through the same
+controls. Review the replacement in
+[`59163ba...d68d701`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-lzm-1024/compare/59163ba8a4dcf204131e98bcaca5b9f82a8063db...d68d701d575a7760525fb70b5f06ae9a7c3b35e9),
+especially [`stopping-distance.ts`](stopping-distance.ts),
+[`stopping-distance.test.ts`](stopping-distance.test.ts) and
+[`main.test.ts`](main.test.ts). The tests verify that controls change the
+calculation and road together, and that doubling speed doubles reaction
+distance but quadruples braking distance under unchanged conditions.
 
-The first model made tread change braking in one direction, a story unsupported
-on dry roads. I rejected a universal coefficient: Queensland data calibrates
-the baseline, Continental points adjust wet braking, and a Tire Rack result
-supplies the smaller dry adjustment. The page states that this does not make
-damaged tyres safe. I kept the Northern Territory car–truck comparison separate
-because its figures do not isolate tread, weather, load or configuration.
-Source boundaries are checked in [`stopping-distance.test.ts`](stopping-distance.test.ts),
+### 2. Preserve the limits of the tyre evidence
+
+My first assumption was that shallower tread should always increase braking
+distance. Wet-road evidence supported that direction, but the dry test showed
+a small result in the opposite direction. A universal tread multiplier would
+have created a clearer interaction by making a claim the evidence did not
+support, so I rejected it.
+
+I used the Queensland table for the stopping baseline, Continental test points
+for wet tread and the smaller Tire Rack result for dry tread. Intermediate
+values are labelled as interpolation rather than measured results. I also kept
+the Northern Territory truck comparison separate because its published values
+do not isolate tread, load, weather and vehicle configuration. Review the model, source
+notes and boundary tests in
+[`d68d701`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-lzm-1024/commit/d68d701d575a7760525fb70b5f06ae9a7c3b35e9),
+particularly [`stopping-distance.test.ts`](stopping-distance.test.ts),
 [`truck-stopping.test.ts`](truck-stopping.test.ts) and
-[`spec/assignment-1.test.ts`](spec/assignment-1.test.ts). The model
-landed in [`d68d701`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-lzm-1024/commit/d68d701d575a7760525fb70b5f06ae9a7c3b35e9).
+[`spec/assignment-1.test.ts`](spec/assignment-1.test.ts). These tests preserve
+the measured anchors and prevent the interface from silently broadening its
+claims. The visible qualification that shallow dry tread is not necessarily
+safe is therefore part of the model, not an optional disclaimer.
 
-### 3. Replace stock video with a testable hazard simulation
+### 3. Turn calculated distance into a decision
 
-Video looked immersive but introduced copyright, download and fixed-timing
-problems. I built an SVG dashcam scene that randomly reveals a pedestrian,
-cyclist or stopped vehicle. An early click is a false alarm; a later click
-becomes distance travelled plus the cost of another half-second. The model is
-tested in [`hazard-perception.test.ts`](hazard-perception.test.ts). At
-1920x1080 and 390x844, random scenarios reached a result, keyboard input worked
-and neither viewport overflowed. When a screenshot exposed untranslated copy,
-I audited both pages and added regression coverage in
-[`i18n.test.ts`](i18n.test.ts). It landed in
-[`090561d`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-lzm-1024/commit/090561d0dcbb2c2350e7e0dadbe789f29dedcd21).
+The first working page calculated stopping distance but still allowed visitors
+to remain passive. I considered road-safety video, but fixed footage could not
+respond to an individual visitor's timing or choice, and realism alone would
+not demonstrate causality. I instead built challenges in which visitors react
+to a random hazard, choose a speed, predict a following gap and receive
+distance or impact-speed feedback.
 
-### 4. Turn a calculator into decisions, not disconnected games
-
-A readout can show a formula without making the visitor use it. I rejected
-decorative mini-games; each experiment instead asks whether road runs out
-before the vehicle stops. Measured reaction time transfers into the obstacle
-model, which reports remaining space or impact speed. Following-gap and 10
-km/h comparisons hide the answer until the visitor chooses. Tests in
+I rejected simple success and failure messages because they hide how close a
+decision was. The activities report distance travelled, remaining space,
+residual collision speed or the cost of another half-second. Review the
+implementation in
+[`090561d`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-lzm-1024/commit/090561d0dcbb2c2350e7e0dadbe789f29dedcd21),
+especially [`hazard-perception.test.ts`](hazard-perception.test.ts),
 [`braking-challenge.test.ts`](braking-challenge.test.ts),
 [`road-games.test.ts`](road-games.test.ts) and
-[`experiments.test.ts`](experiments.test.ts) verify collision speed, safer
-speed, prediction outcomes and interaction state
-([`d68d701...090561d`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-lzm-1024/compare/d68d701d575a7760525fb70b5f06ae9a7c3b35e9...090561d0dcbb2c2350e7e0dadbe789f29dedcd21)).
+[`experiments.test.ts`](experiments.test.ts). They verify reaction distance,
+collision outcomes, predictions and interaction state. Manual checks at desktop
+and mobile sizes also covered keyboard input, random scenario completion and
+overflow, while the interface acknowledges device latency rather than
+presenting the browser result as a clinical measurement.
 
 ## Before you ship
 
-`pnpm test` passes 77 tests across 11 files; `pnpm check` also passes type
-checking, production build and linting. I manually checked both
-viewports, keyboard input and horizontal overflow. `pnpm check:evidence`
-locally resolves every cited commit; the GitHub links become public after the
-repository is pushed and shipped.
+`pnpm test` passes 77 tests across 11 files. `pnpm check` also runs type
+checking, production build and linting, while `pnpm check:evidence` verifies
+that every cited history reference resolves.

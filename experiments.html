@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en-AU">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Test your reaction time, then use it in an interactive obstacle braking challenge." />
+    <title>Reaction & Braking Lab</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><circle cx=%2216%22 cy=%2216%22 r=%2213%22 fill=%22%23ff8f5c%22/><rect x=%2214%22 y=%227%22 width=%224%22 height=%2212%22 rx=%222%22 fill=%22%23050609%22/><circle cx=%2216%22 cy=%2224%22 r=%222%22 fill=%22%23050609%22/></svg>" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./experiments.css" />
+  </head>
+  <body class="lab-page">
+    <header class="site-header lab-header">
+      <nav aria-label="Primary">
+        <a class="wordmark" href="./index.html">Stopping distance</a>
+        <div class="header-actions">
+          <label class="language-switcher">
+            <span class="visually-hidden">Language</span>
+            <select data-language-select aria-label="Language">
+              <option value="en">English</option>
+              <option value="zh-CN">简体中文</option>
+              <option value="zh-TW">繁體中文</option>
+              <option value="ja">日本語</option>
+              <option value="ko">한국어</option>
+            </select>
+          </label>
+          <a class="back-link" href="./index.html">← Back to the main explainer</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="lab-main">
+      <section class="lab-hero">
+        <p class="eyebrow">Five interactive challenges</p>
+        <h1>Do you react before the road runs out?</h1>
+        <p>Measure your response, then put it into a braking challenge where every metre matters.</p>
+        <div class="lesson-path" aria-label="Experiment sequence">
+          <a href="#reaction-lab"><span>01</span> Test your reaction</a>
+          <span aria-hidden="true">→</span>
+          <a href="#obstacle-lab"><span>02</span> Avoid the obstacle</a>
+          <span aria-hidden="true">→</span>
+          <a href="#hazard-perception-title"><span>03</span> Hazard perception</a>
+          <span aria-hidden="true">→</span>
+          <a href="#mini-games-title"><span>04</span> Quick challenges</a>
+          <span aria-hidden="true">→</span>
+          <a href="#weather-guide-title"><span>05</span> Weather guide</a>
+        </div>
+      </section>
+
+      <section class="experiment-section reaction-lab" id="reaction-lab" aria-labelledby="reaction-title">
+        <div class="experiment-heading">
+          <div>
+            <p class="eyebrow">Experiment 01 · reaction distance</p>
+            <h2 id="reaction-title">Brake when the hazard appears.</h2>
+          </div>
+          <p>Press the button or spacebar as soon as the obstacle appears. The delay is random, so do not anticipate it.</p>
+        </div>
+
+        <div class="reaction-game" id="reaction-game" data-state="idle">
+          <div class="reaction-road" aria-hidden="true">
+            <span class="reaction-road-line"></span>
+            <span class="reaction-car"><i></i><i></i></span>
+            <span class="reaction-obstacle"><i></i></span>
+          </div>
+          <div class="reaction-prompt">
+            <p class="reaction-status" id="reaction-status" aria-live="assertive">Ready to test your reflexes?</p>
+            <p class="reaction-instruction" id="reaction-instruction">Start the run, then wait for the hazard.</p>
+            <div class="reaction-actions">
+              <button class="primary-button" id="reaction-start" type="button">Start driving</button>
+              <button class="brake-button" id="reaction-brake" type="button" disabled>Brake <span>Space</span></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="reaction-result" id="reaction-result" hidden>
+          <div>
+            <span class="metric-label">Your reaction time</span>
+            <strong><output id="measured-reaction">0.82</output> s</strong>
+          </div>
+          <div>
+            <span class="metric-label">Distance travelled at 80 km/h</span>
+            <strong><output id="measured-reaction-distance">18.2</output> m</strong>
+          </div>
+          <p>Your measured time has been transferred to the obstacle challenge below.</p>
+        </div>
+        <p class="device-note">This browser test includes screen, keyboard, mouse and device latency. Treat it as an illustration—not a clinical measurement of driving performance.</p>
+      </section>
+
+      <section class="experiment-section obstacle-lab" id="obstacle-lab" aria-labelledby="obstacle-title">
+        <div class="experiment-heading">
+          <div>
+            <p class="eyebrow">Experiment 02 · obstacle challenge</p>
+            <h2 id="obstacle-title">Choose a speed. Test the stop.</h2>
+          </div>
+          <p>The obstacle is fixed ahead. Balance speed, reaction time and road grip, then see where the vehicle actually ends up.</p>
+        </div>
+
+        <div class="challenge-presets" aria-label="Obstacle challenge scenarios">
+          <button type="button" data-challenge-speed="50" data-challenge-reaction="0.8" data-challenge-surface="dry" data-challenge-obstacle="55">Sunny residential</button>
+          <button type="button" data-challenge-speed="70" data-challenge-reaction="1.2" data-challenge-surface="wet" data-challenge-obstacle="55" class="is-active">Rainy city</button>
+          <button type="button" data-challenge-speed="90" data-challenge-reaction="1.8" data-challenge-surface="dry" data-challenge-obstacle="95">Tired at night</button>
+          <button type="button" data-challenge-speed="100" data-challenge-reaction="1.2" data-challenge-surface="wet" data-challenge-obstacle="100">Wet motorway</button>
+        </div>
+
+        <div class="challenge-stage" id="challenge-stage" data-outcome="untested">
+          <div class="challenge-sky" aria-hidden="true"></div>
+          <div class="challenge-road" aria-hidden="true">
+            <span class="challenge-path reaction-path"></span>
+            <span class="challenge-path braking-path"></span>
+            <span class="challenge-start"></span>
+            <span class="challenge-brake-point"></span>
+            <span class="challenge-stop-point"></span>
+            <span class="challenge-obstacle"><i></i></span>
+            <span class="challenge-car"><i></i><i></i></span>
+          </div>
+          <div class="challenge-labels" aria-hidden="true">
+            <span>Start</span>
+            <span class="reaction-label">Reaction <b id="road-reaction-distance">23.3 m</b></span>
+            <span class="braking-label">Braking <b id="road-braking-distance">50.3 m</b></span>
+            <span class="obstacle-label">Obstacle <b id="road-obstacle-distance">55 m</b></span>
+          </div>
+        </div>
+
+        <div class="challenge-workbench">
+          <div class="challenge-controls">
+            <div class="challenge-control">
+              <div class="control-heading compact-heading">
+                <label for="challenge-speed">Speed</label>
+                <output id="challenge-speed-value" for="challenge-speed">70 km/h</output>
+              </div>
+              <div class="slider-row">
+                <span class="range-bound" aria-hidden="true">30</span>
+                <input type="range" id="challenge-speed" min="30" max="110" step="1" value="70" />
+                <span class="range-bound" aria-hidden="true">110</span>
+              </div>
+            </div>
+
+            <div class="challenge-control">
+              <div class="control-heading compact-heading">
+                <label for="challenge-reaction">Reaction time</label>
+                <output id="challenge-reaction-value" for="challenge-reaction">1.20 s</output>
+              </div>
+              <div class="slider-row">
+                <span class="range-bound" aria-hidden="true">0.5</span>
+                <input type="range" id="challenge-reaction" min="0.1" max="3" step="0.01" value="1.2" />
+                <span class="range-bound" aria-hidden="true">3.0</span>
+              </div>
+              <div class="reaction-presets" aria-label="Reaction time presets">
+                <button type="button" data-reaction="0.8">Focused</button>
+                <button type="button" data-reaction="1.5">Tired</button>
+                <button type="button" data-reaction="2.5">Distracted</button>
+              </div>
+            </div>
+
+            <fieldset class="challenge-control surface-control">
+              <legend>Road surface</legend>
+              <div class="surface-options">
+                <label><input type="radio" name="challenge-surface" value="dry" /><span>Dry</span></label>
+                <label><input type="radio" name="challenge-surface" value="wet" checked /><span>Wet</span></label>
+                <label><input type="radio" name="challenge-surface" value="ice" /><span>Icy</span></label>
+              </div>
+            </fieldset>
+
+            <div class="challenge-control">
+              <div class="control-heading compact-heading">
+                <label for="challenge-obstacle">Obstacle distance</label>
+                <output id="challenge-obstacle-value" for="challenge-obstacle">55 m</output>
+              </div>
+              <div class="slider-row">
+                <span class="range-bound" aria-hidden="true">30</span>
+                <input type="range" id="challenge-obstacle" min="30" max="120" step="1" value="55" />
+                <span class="range-bound" aria-hidden="true">120</span>
+              </div>
+            </div>
+
+            <button class="primary-button challenge-test" id="challenge-test" type="button">Test the brakes</button>
+          </div>
+
+          <div class="challenge-feedback" id="challenge-feedback" data-outcome="untested" aria-live="polite">
+            <p class="feedback-kicker" id="feedback-kicker">Ready when you are</p>
+            <h3 id="feedback-title">Will 55 metres be enough?</h3>
+            <p class="feedback-number"><output id="feedback-number">—</output><span id="feedback-unit"></span></p>
+            <p id="feedback-copy">Adjust the controls, then test the brakes to reveal the outcome.</p>
+            <dl class="distance-breakdown">
+              <div><dt>Reaction</dt><dd><output id="challenge-reaction-distance">23.3</output> m</dd></div>
+              <div><dt>Braking</dt><dd><output id="challenge-braking-distance">50.3</output> m</dd></div>
+              <div><dt>Total</dt><dd><output id="challenge-total-distance">73.6</output> m</dd></div>
+              <div><dt>Obstacle</dt><dd><output id="challenge-obstacle-distance">55.0</output> m</dd></div>
+            </dl>
+          </div>
+        </div>
+
+        <p class="model-disclaimer"><strong>Educational model:</strong> braking uses speed² ÷ (2 × grip × gravity). “Dry”, “wet” and “icy” are simplified teaching coefficients. Real stopping distance also depends on tyres, brakes, gradient, vehicle load and driver condition; do not use this page as the sole basis for a real driving gap.</p>
+      </section>
+
+      <section class="experiment-section hazard-perception" id="hazard-perception-lab" aria-labelledby="hazard-perception-title">
+        <div class="experiment-heading">
+          <div>
+            <p class="eyebrow">Experiment 03 · hazard perception</p>
+            <h2 id="hazard-perception-title">How quickly do you notice danger?</h2>
+          </div>
+          <p>Watch the simulated dashcam clip. A pedestrian, cyclist or stopped vehicle will appear at a random moment. Click as soon as it becomes a hazard.</p>
+        </div>
+
+        <div class="hazard-console">
+          <div class="hazard-clip" id="hazard-clip" data-state="idle" data-scenario="pedestrian">
+            <div class="hazard-camera-hud" aria-hidden="true">
+              <span class="recording-mark">REC</span>
+              <span>ROAD CAM · 01</span>
+              <time id="hazard-clip-time">00:00.0</time>
+            </div>
+            <svg class="hazard-scene" viewBox="0 0 1000 430" role="img" aria-label="Simulated forward-facing road scene">
+              <rect class="hazard-sky" width="1000" height="430" />
+              <circle class="hazard-sun" cx="825" cy="74" r="31" />
+              <path class="hazard-horizon" d="M0 210 110 116 235 205 348 104 475 206 606 126 742 205 865 108 1000 198V430H0Z" />
+              <g class="hazard-buildings">
+                <path d="M40 214V142h125v72M188 214v-96h107v96M740 214v-72h114v72M872 214v-108h92v108" />
+                <path d="M70 164h26m22 0h26m70-22h24m-24 28h24m532-4h25m21 0h25m61-36h22m-22 30h22" />
+              </g>
+              <path class="hazard-road" d="M0 430 310 205h380l310 225Z" />
+              <path class="hazard-road-edge" d="M0 430 310 205M1000 430 690 205" />
+              <g class="hazard-lane-marks">
+                <path d="M500 230v34M500 284v52M500 362v68" />
+                <path d="M392 247 352 278M326 300l-59 47M236 372l-73 58M608 247l40 31M674 300l59 47M764 372l73 58" />
+              </g>
+              <g class="hazard-traffic">
+                <g class="hazard-distant-car"><path d="M457 226h83l18 27v37H440v-37Z" /><circle cx="462" cy="288" r="9" /><circle cx="535" cy="288" r="9" /></g>
+              </g>
+              <g class="hazard-object hazard-pedestrian">
+                <circle cx="793" cy="238" r="14" /><path d="M793 252v52m0-32-23 18m23-18 25 13m-25 19-19 35m19-35 24 32" />
+              </g>
+              <g class="hazard-object hazard-cyclist">
+                <circle cx="786" cy="323" r="24" /><circle cx="856" cy="323" r="24" /><path d="m786 323 34-52 36 52h-70l24-36 38 4m-28-20 18-18m-12 7-17-11" /><circle cx="827" cy="239" r="11" />
+              </g>
+              <g class="hazard-object hazard-stopped-car">
+                <path d="M746 278h132l35 48v58H717v-58Z" /><path d="m774 278 28-39h64l28 39" /><circle cx="756" cy="382" r="17" /><circle cx="873" cy="382" r="17" /><path d="M736 331h35m90 0h35" />
+              </g>
+              <path class="hazard-dashboard" d="M0 396c188-43 312-53 500-53s312 10 500 53v34H0Z" />
+            </svg>
+            <div class="hazard-sr-status" id="hazard-live-status" role="status" aria-live="assertive">Ready for a new clip.</div>
+          </div>
+
+          <div class="hazard-controls">
+            <div class="hazard-speed-control">
+              <div class="control-heading compact-heading">
+                <label for="hazard-speed">Vehicle speed</label>
+                <output id="hazard-speed-value" for="hazard-speed">60 km/h</output>
+              </div>
+              <input id="hazard-speed" type="range" min="40" max="100" step="10" value="60" />
+            </div>
+            <progress id="hazard-clip-progress" max="6" value="0" aria-label="Clip progress"></progress>
+            <p class="hazard-instruction" id="hazard-instruction">Start the clip, keep watching the road, then report the first developing hazard.</p>
+            <div class="hazard-actions">
+              <button class="primary-button" id="hazard-start" type="button">Start random clip</button>
+              <button class="hazard-spot-button" id="hazard-spot" type="button" disabled>I see danger <span>Space</span></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="hazard-analysis" id="hazard-analysis" hidden aria-live="polite">
+          <div class="hazard-score">
+            <p class="eyebrow">Your hazard response</p>
+            <strong><output id="hazard-reaction-time">0.82</output><span> s</span></strong>
+            <p id="hazard-rating">Good awareness</p>
+          </div>
+          <div class="hazard-finding">
+            <span>Distance before your click</span>
+            <strong><output id="hazard-distance">13.7</output> m</strong>
+          </div>
+          <div class="hazard-finding warning-finding">
+            <span>If you waited 0.5 seconds longer</span>
+            <strong>+<output id="hazard-late-distance">8.3</output> m</strong>
+          </div>
+          <div class="hazard-timeline" aria-label="Hazard response timeline">
+            <div><span>Danger develops</span><strong>0.00 s</strong></div>
+            <i aria-hidden="true"></i>
+            <div><span>You respond</span><strong id="hazard-timeline-response">0.82 s</strong></div>
+            <i aria-hidden="true"></i>
+            <div><span>Half a second later</span><strong id="hazard-timeline-late">1.32 s</strong></div>
+          </div>
+        </div>
+        <p class="device-note">This is a simulated hazard-perception exercise, not an official licensing test. Display and input latency affect the result.</p>
+      </section>
+
+      <section class="mini-games" aria-labelledby="mini-games-title">
+        <div class="experiment-heading mini-games-heading">
+          <div>
+            <p class="eyebrow">Three quick challenges</p>
+            <h2 id="mini-games-title">Can you judge the danger before seeing the answer?</h2>
+          </div>
+          <p>These short games turn the same stopping model into decisions drivers make every day: how closely to follow, what 10 km/h changes, and whether the available road is enough.</p>
+        </div>
+
+        <div class="game-grid">
+          <article class="mini-game following-game">
+            <div class="game-number">01</div>
+            <p class="eyebrow">Following gap</p>
+            <h3>How many seconds would you leave?</h3>
+            <p class="game-copy">The lead car brakes hard on a dry road. Your road may have less grip.</p>
+            <div class="mini-road following-road" aria-hidden="true">
+              <span class="mini-car lead-mini-car"></span>
+              <span class="mini-car follower-mini-car"></span>
+              <span class="gap-marker"><b id="following-gap-metres">33.3 m</b></span>
+            </div>
+            <div class="game-control">
+              <div class="control-heading compact-heading">
+                <label for="following-speed">Speed</label>
+                <output id="following-speed-value" for="following-speed">80 km/h</output>
+              </div>
+              <input type="range" id="following-speed" min="40" max="110" step="1" value="80" />
+            </div>
+            <div class="gap-buttons" aria-label="Following time gap">
+              <button type="button" data-gap="1">1 sec</button>
+              <button type="button" data-gap="2" class="is-active">2 sec</button>
+              <button type="button" data-gap="3">3 sec</button>
+              <button type="button" data-gap="4">4 sec</button>
+            </div>
+            <div class="compact-selects">
+              <label>Reaction
+                <select id="following-reaction">
+                  <option value="0.8">Focused · 0.8 s</option>
+                  <option value="1.5" selected>Tired · 1.5 s</option>
+                  <option value="2.5">Distracted · 2.5 s</option>
+                </select>
+              </label>
+              <label>Your road
+                <select id="following-surface">
+                  <option value="dry">Dry</option>
+                  <option value="wet" selected>Wet</option>
+                  <option value="ice">Icy</option>
+                </select>
+              </label>
+            </div>
+            <button class="game-action" id="following-test" type="button">Test this gap</button>
+            <div class="game-result" id="following-result" data-outcome="untested" aria-live="polite">
+              <strong id="following-title">Choose a gap, then test it.</strong>
+              <p id="following-copy">The distance between the cars changes with speed.</p>
+            </div>
+          </article>
+
+          <article class="mini-game duel-game">
+            <div class="game-number">02</div>
+            <p class="eyebrow">Only 10 km/h faster</p>
+            <h3>Two cars. The same hazard.</h3>
+            <p class="game-copy">The orange car travels just 10 km/h faster. Both drivers react in 1.2 seconds.</p>
+            <div class="duel-bars" aria-live="polite">
+              <div><span>Slower · <output id="duel-slower-speed">60</output> km/h</span><i class="duel-slower-bar"></i><b><output id="duel-slower-distance">44.9</output> m</b></div>
+              <div><span>Faster · <output id="duel-faster-speed">70</output> km/h</span><i class="duel-faster-bar"></i><b><output id="duel-faster-distance">57.8</output> m</b></div>
+            </div>
+            <div class="game-control">
+              <div class="control-heading compact-heading">
+                <label for="duel-speed">Slower car speed</label>
+                <output id="duel-speed-value" for="duel-speed">60 km/h</output>
+              </div>
+              <input type="range" id="duel-speed" min="40" max="100" step="1" value="60" />
+            </div>
+            <fieldset class="duel-surface">
+              <legend>Road</legend>
+              <label><input type="radio" name="duel-surface" value="dry" /><span>Dry</span></label>
+              <label><input type="radio" name="duel-surface" value="wet" checked /><span>Wet</span></label>
+              <label><input type="radio" name="duel-surface" value="ice" /><span>Icy</span></label>
+            </fieldset>
+            <button class="game-action" id="duel-test" type="button">Run both cars</button>
+            <div class="game-result" id="duel-result" data-outcome="untested" aria-live="polite">
+              <strong>How much difference can 10 km/h make?</strong>
+              <p>Run the cars to reveal the faster car’s remaining speed.</p>
+            </div>
+          </article>
+
+          <article class="mini-game prediction-game">
+            <div class="game-number">03</div>
+            <p class="eyebrow">Five-round prediction</p>
+            <h3>Will the car stop in time?</h3>
+            <div class="quiz-progress"><span id="quiz-progress-bar"></span></div>
+            <p class="quiz-count">Question <output id="quiz-question-number">1</output> of 5 · Score <output id="quiz-score">0</output></p>
+            <div class="quiz-scenario">
+              <div><span>Speed</span><strong><output id="quiz-speed">50</output> km/h</strong></div>
+              <div><span>Reaction</span><strong><output id="quiz-reaction">0.8</output> s</strong></div>
+              <div><span>Road</span><strong id="quiz-surface">Dry</strong></div>
+              <div><span>Obstacle</span><strong><output id="quiz-obstacle">55</output> m</strong></div>
+            </div>
+            <p class="quiz-prompt">Predict the outcome before the calculation is revealed.</p>
+            <div class="prediction-buttons">
+              <button type="button" data-prediction="safe">Stops safely</button>
+              <button type="button" data-prediction="tight">Barely stops</button>
+              <button type="button" data-prediction="collision">Collision</button>
+            </div>
+            <div class="game-result" id="quiz-result" data-outcome="untested" aria-live="polite">
+              <strong id="quiz-result-title">Make your prediction.</strong>
+              <p id="quiz-result-copy">You will see the exact stopping distance after answering.</p>
+            </div>
+            <button class="game-action" id="quiz-next" type="button" hidden>Next question</button>
+          </article>
+        </div>
+      </section>
+
+      <section class="weather-guide" aria-labelledby="weather-guide-title">
+        <div class="experiment-heading weather-guide-heading">
+          <div>
+            <p class="eyebrow">Severe-weather safety guide</p>
+            <h2 id="weather-guide-title">When conditions change, your plan must change first.</h2>
+          </div>
+          <p>Choose a condition to reveal the actions recommended by Australian road-safety authorities. If conditions become severe, delaying the trip or stopping safely is often the best decision.</p>
+        </div>
+
+        <div class="weather-tutorial">
+          <div class="weather-tabs" role="tablist" aria-label="Weather driving conditions">
+            <button id="weather-tab-prepare" type="button" role="tab" aria-selected="true" aria-controls="weather-panel-prepare" data-weather-tab="prepare">
+              <span class="weather-symbol" aria-hidden="true">✓</span><span>Before you leave<small>Plan and prepare</small></span>
+            </button>
+            <button id="weather-tab-rain" type="button" role="tab" aria-selected="false" aria-controls="weather-panel-rain" data-weather-tab="rain" tabindex="-1">
+              <span class="weather-symbol" aria-hidden="true">☂</span><span>Heavy rain<small>Grip and visibility</small></span>
+            </button>
+            <button id="weather-tab-visibility" type="button" role="tab" aria-selected="false" aria-controls="weather-panel-visibility" data-weather-tab="visibility" tabindex="-1">
+              <span class="weather-symbol" aria-hidden="true">≋</span><span>Fog, dust or smoke<small>Reduced visibility</small></span>
+            </button>
+            <button id="weather-tab-flood" type="button" role="tab" aria-selected="false" aria-controls="weather-panel-flood" data-weather-tab="flood" tabindex="-1">
+              <span class="weather-symbol" aria-hidden="true">≈</span><span>Floodwater<small>Turn around</small></span>
+            </button>
+            <button id="weather-tab-extreme" type="button" role="tab" aria-selected="false" aria-controls="weather-panel-extreme" data-weather-tab="extreme" tabindex="-1">
+              <span class="weather-symbol" aria-hidden="true">✦</span><span>Wind, ice or snow<small>Instability and low grip</small></span>
+            </button>
+          </div>
+
+          <div class="weather-panels">
+            <article id="weather-panel-prepare" class="weather-panel" role="tabpanel" aria-labelledby="weather-tab-prepare" data-weather-panel="prepare">
+              <div class="weather-panel-visual prepare-visual" aria-hidden="true"><span></span><i></i></div>
+              <div class="weather-panel-copy">
+                <p class="weather-rule">The safest severe-weather drive may be the one you postpone.</p>
+                <h3>Check before the wheels move.</h3>
+                <ol class="weather-steps">
+                  <li><span>01</span><div><strong>Check official warnings</strong><p>Review the forecast, road closures, storms, bushfires, hail, snow, dust and heavy fog before leaving.</p></div></li>
+                  <li><span>02</span><div><strong>Check the vehicle</strong><p>Tyre tread, lights, windscreen, wipers and demister all matter when grip and visibility fall.</p></div></li>
+                  <li><span>03</span><div><strong>Keep another plan</strong><p>Change the route, delay the trip or arrange another way to travel if conditions are unpredictable or severe.</p></div></li>
+                </ol>
+                <p class="weather-bottom-line"><strong>Decision rule:</strong> If the conditions are beyond your ability or visibility, do not continue.</p>
+              </div>
+            </article>
+
+            <article id="weather-panel-rain" class="weather-panel" role="tabpanel" aria-labelledby="weather-tab-rain" data-weather-panel="rain" hidden>
+              <div class="weather-panel-visual rain-visual" aria-hidden="true"><span></span><i></i></div>
+              <div class="weather-panel-copy">
+                <p class="weather-rule">Wet roads increase stopping distance and the risk of aquaplaning.</p>
+                <h3>Slow down and make every input smooth.</h3>
+                <ol class="weather-steps">
+                  <li><span>01</span><div><strong>Use low-beam lights and the demister</strong><p>Make the vehicle easier to see and keep the windscreen clear of condensation.</p></div></li>
+                  <li><span>02</span><div><strong>Double the following time</strong><p>Queensland guidance recommends at least 4 seconds for a standard car in wet weather, compared with 2 seconds in good conditions.</p></div></li>
+                  <li><span>03</span><div><strong>Avoid sudden control inputs</strong><p>Brake, accelerate and steer smoothly. Slow down and avoid cruise control to reduce aquaplaning risk.</p></div></li>
+                </ol>
+                <p class="weather-bottom-line"><strong>Remember:</strong> The signed limit is a maximum for good conditions—not a target in heavy rain.</p>
+              </div>
+            </article>
+
+            <article id="weather-panel-visibility" class="weather-panel" role="tabpanel" aria-labelledby="weather-tab-visibility" data-weather-panel="visibility" hidden>
+              <div class="weather-panel-visual visibility-visual" aria-hidden="true"><span></span><i></i></div>
+              <div class="weather-panel-copy">
+                <p class="weather-rule">If you cannot see enough road to stop within it, you are travelling too fast.</p>
+                <h3>Be visible without dazzling anyone.</h3>
+                <ol class="weather-steps">
+                  <li><span>01</span><div><strong>Slow down and use low beam</strong><p>High beam reflects from fog and can make it harder to see. Use permitted fog lights only while visibility is poor.</p></div></li>
+                  <li><span>02</span><div><strong>Do not overtake in dust</strong><p>Keep windows closed and use air recirculation to reduce dust entering the cabin.</p></div></li>
+                  <li><span>03</span><div><strong>Stop somewhere genuinely safe</strong><p>If visibility deteriorates, pull off the traffic lane in a safe place and wait for conditions to improve.</p></div></li>
+                </ol>
+                <p class="weather-bottom-line"><strong>Do not:</strong> Stop suddenly in a live traffic lane simply because visibility has fallen.</p>
+              </div>
+            </article>
+
+            <article id="weather-panel-flood" class="weather-panel flood-panel" role="tabpanel" aria-labelledby="weather-tab-flood" data-weather-panel="flood" hidden>
+              <div class="weather-panel-visual flood-visual" aria-hidden="true"><span></span><i></i></div>
+              <div class="weather-panel-copy">
+                <p class="weather-rule">You cannot reliably judge the depth, current, debris or road damage beneath floodwater.</p>
+                <h3>If it is flooded, forget it.</h3>
+                <ol class="weather-steps">
+                  <li><span>01</span><div><strong>Stop before the water</strong><p>Never attempt to drive across a flooded road or bridge—even if the water appears calm or shallow.</p></div></li>
+                  <li><span>02</span><div><strong>Turn around and find another route</strong><p>Follow closure signs and official directions. Waiting is safer than testing the crossing.</p></div></li>
+                  <li><span>03</span><div><strong>Check the road after flooding</strong><p>Recently flooded surfaces and bridges may remain damaged, unstable or slippery.</p></div></li>
+                </ol>
+                <p class="weather-bottom-line flood-warning"><strong>Non-negotiable:</strong> Never drive, walk or ride through floodwater.</p>
+              </div>
+            </article>
+
+            <article id="weather-panel-extreme" class="weather-panel" role="tabpanel" aria-labelledby="weather-tab-extreme" data-weather-panel="extreme" hidden>
+              <div class="weather-panel-visual extreme-visual" aria-hidden="true"><span></span><i></i></div>
+              <div class="weather-panel-copy">
+                <p class="weather-rule">Strong wind reduces stability; ice and snow reduce tyre grip.</p>
+                <h3>Create time, space and gentle movement.</h3>
+                <ol class="weather-steps">
+                  <li><span>01</span><div><strong>Follow warnings and advisory speeds</strong><p>Check Bureau of Meteorology warnings and road updates; delay travel during severe weather where possible.</p></div></li>
+                  <li><span>02</span><div><strong>Reduce speed and increase the gap</strong><p>Brake early and gently, accelerate slowly and avoid abrupt steering on wet or icy surfaces.</p></div></li>
+                  <li><span>03</span><div><strong>Expect instability</strong><p>Allow additional space around trucks, trailers and caravans, which can be more affected by wind and require longer stopping distances.</p></div></li>
+                </ol>
+                <p class="weather-bottom-line"><strong>Exit strategy:</strong> If conditions worsen, pull over somewhere safe and wait rather than pushing on.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="weather-sources">
+          <p><strong>Official guidance used:</strong> <a href="https://www.nsw.gov.au/driving-boating-and-transport/roads-safety-and-rules/warnings-and-hazards/poor-conditions">NSW Government—poor conditions</a> · <a href="https://www.qld.gov.au/transport/safety/road-safety/wet-weather">Queensland Government—wet weather</a> · <a href="https://www.qld.gov.au/transport/safety/road-safety/driving-safely/driving-conditions">Queensland Government—dusty conditions</a> · <a href="https://www.bom.gov.au/resources/know-your-weather-know-your-risk">Bureau of Meteorology—know your risk</a></p>
+          <p>General education only. Follow current warnings, road closures, emergency services and the road rules in your state or territory.</p>
+        </div>
+      </section>
+
+      <section class="lab-return">
+        <p class="eyebrow">Continue exploring</p>
+        <h2>Compare this result with the evidence-based car and truck models.</h2>
+        <a class="primary-link" href="./index.html">Return to the main explainer →</a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Educational model only. Real stopping distance depends on the vehicle, driver, tyres, road and weather.</p>
+    </footer>
+    <script type="module" src="./experiments.ts"></script>
+  </body>
+</html>
